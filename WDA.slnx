@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/client/" />
+  <Folder Name="/src/server/" />
+  <Folder Name="/src/server/1 - Presentation/">
+    <Project Path="WDA.WebApi/WDA.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/src/server/2 - Application/">
+    <Project Path="WDA.Application/WDA.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/server/3 - Infrastructure/">
+    <Project Path="WDA.Infrastructure/WDA.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/server/4 - Domain/">
+    <Project Path="WDA.Domain/WDA.Domain.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/client tests/" />
+  <Folder Name="/tests/server tests/" />
+</Solution>

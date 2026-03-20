@@ -1,0 +1,6 @@
+@WDA.WebApi_HostAddress = http://localhost:5128
+
+GET {{WDA.WebApi_HostAddress}}/api/users
+Accept: application/json
+
+###
