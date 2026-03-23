@@ -1,9 +1,10 @@
 ﻿namespace WDA.Shared.Errors;
 
-public record Error(string Code, string Description)
+public record Error(ErrorType ErrorType, string Description)
 {
-    public static readonly Error None = new(string.Empty, string.Empty);
-    public static Error NullValue = new("Error.NullValue", "Null value was provided.");
-    public static implicit operator Result(Error error) => Result.Failure(error);
-    public Result ToResult() => Result.Failure(this);
+    public static readonly Error None = new(ErrorType.None, string.Empty);
+    public static Error NullValue = new(ErrorType.Null, "Null value was provided.");
+    
+    public static implicit operator Result(Error error) => Failure.Create(error);
+    public Result ToResult() => Failure.Create(this);
 }

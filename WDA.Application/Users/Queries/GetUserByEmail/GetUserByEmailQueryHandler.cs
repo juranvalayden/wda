@@ -5,7 +5,7 @@ using WDA.Shared.Errors;
 
 namespace WDA.Application.Users.Queries.GetUserByEmail;
 
-public class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery, GetUserByEmailResult>
+public class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery>
 {
     private readonly IUserService _userService;
 
@@ -14,18 +14,15 @@ public class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery, Get
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
-    public async Task<GetUserByEmailResult> Handle(GetUserByEmailQuery query, CancellationToken cancellationToken = default)
+    public async Task<Result> Handle(GetUserByEmailQuery query, CancellationToken cancellationToken = default)
     {
         var userDto = await _userService.GetUserByEmailAsync(query.Email, cancellationToken);
-
+        
         if (userDto == null)
         {
-            return new GetUserByEmailResult
-            {
-                Result = Result<UserDto>.Failure(UserErrors.NotFound(query.Email))
-            };
+            return UserErrors.NotFound(query.Email);
         }
 
-        return Result<GetUserByEmailQueryResult>.Success(userDto);
+        return Result<UserDto>.Success(userDto);
     }
 }

@@ -10,7 +10,7 @@ public static class Constants
 
     public const int EmailMaxTextLength = 75;
 
-    public const int PasswordMinTextLength = 8;
+    public const int PasswordMinTextLength = 10;
     public const int PasswordMaxTextLength = 50;
 
     public const int CreatedByMaxTextLength = 50;

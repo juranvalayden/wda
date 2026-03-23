@@ -2,4 +2,4 @@
 
 namespace WDA.Application.Users.Queries.GetUserByEmail;
 
-public record GetUserByEmailQuery(string Email) : IQuery<GetUserByEmailResult>;
+public record GetUserByEmailQuery(string Email) : IQuery;

@@ -1,6 +1,6 @@
 ﻿namespace WDA.Shared.Errors;
 
-public class Result
+public abstract class Result
 {
     public bool IsFailure { get; set; }
     public Error? Error { get; set; }
@@ -10,34 +10,16 @@ public class Result
         IsFailure = isFailure;
         Error = error;
     }
-
-    public static Result Failure(Error error)
-    {
-        return new Result(isFailure: true, error: error);
-    }
-
-    public static Result Success()
-    {
-        return new Result(isFailure: true, error: null);
-    }
 }
 
 public class Result<T> : Result
 {
-    public T? Data { get; set; }
-
-    private Result(bool isFailure, Error? error, T? data) : base(isFailure, error)
+    protected Result(bool isFailure, Error? error) : base(isFailure, error)
     {
-        Data = data;
     }
 
-    public new static Result<T?> Failure(Error error)
+    public static Success<T> Success(T data)
     {
-        return new Result<T?>(isFailure: true, error: error, data: default);
-    }
-
-    public static Result Success(T data)
-    {
-        return new Result<T>(isFailure: false, error: null, data: data);
+        return Success<T>.Create(data);
     }
 }

@@ -1,7 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WDA.Domain.Common;
+﻿using WDA.Domain.Common;
 using WDA.Domain.Entities;
-using WDA.Domain.Repositories;
 using WDA.Infrastructure.Persistence;
 
 namespace WDA.Infrastructure.Repositories;

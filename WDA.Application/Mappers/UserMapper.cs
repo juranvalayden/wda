@@ -6,7 +6,8 @@ namespace WDA.Application.Mappers;
 public static class UserMapper
 {
     public static UserDto MapToDto(User user) => 
-        new(user.FirstName, 
+        new(user.Id,
+            user.FirstName, 
             user.LastName, 
             user.Email);
 

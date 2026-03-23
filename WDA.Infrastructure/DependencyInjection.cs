@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WDA.Domain.Common;
 using WDA.Domain.Entities;
+using WDA.Domain.Repositories;
 using WDA.Infrastructure.Persistence;
 using WDA.Infrastructure.Repositories;
 
@@ -23,7 +24,7 @@ public static class DependencyInjection
             });
         });
 
-        services.AddTransient<IRepository<User>, UserRepository>();
-        services.AddTransient<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUserRepository, UserRepository>();
     }
 }
