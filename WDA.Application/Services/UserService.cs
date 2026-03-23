@@ -1,6 +1,7 @@
 ﻿using WDA.Application.Dtos;
 using WDA.Application.Interfaces;
 using WDA.Application.Mappers;
+using WDA.Domain.Common;
 using WDA.Domain.Repositories;
 
 namespace WDA.Application.Services;
@@ -8,10 +9,12 @@ namespace WDA.Application.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
     public async Task<UserDto?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)

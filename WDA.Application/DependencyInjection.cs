@@ -13,9 +13,8 @@ public static class DependencyInjection
     public static void AddApplication(this IServiceCollection services)
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly, includeInternalTypes: true);
-
+        
         services.AddScoped<IUserService, UserService>();
-
         services.AddScoped<ICommandHandler<CreateUserCommand>, CreateUserCommandHandler>();
         services.AddScoped<IQueryHandler<GetUserByEmailQuery>, GetUserByEmailQueryHandler>();
     }

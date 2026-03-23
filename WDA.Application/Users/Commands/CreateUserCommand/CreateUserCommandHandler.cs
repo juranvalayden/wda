@@ -26,7 +26,7 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
 
         if (createdUser != null)
         {
-            return Result<int>.Success(createdUser.Id);
+            return Result<string>.Success(createdUser.Email);
         }
 
         return UserErrors.ErrorSaving();

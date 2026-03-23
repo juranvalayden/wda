@@ -13,23 +13,21 @@ namespace WDA.WebApi.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly ICommandHandler<CreateUserCommand> _commandHandler;
+    private readonly IQueryHandler<GetUserByEmailQuery> _queryHandler;
 
-    public UserController(ILogger<UserController> logger, IServiceScopeFactory serviceScopeFactory)
+    public UserController(ILogger<UserController> logger, ICommandHandler<CreateUserCommand> commandHandler, IQueryHandler<GetUserByEmailQuery> queryHandler)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+        _commandHandler = commandHandler ?? throw new ArgumentNullException(nameof(commandHandler));
+        _queryHandler = queryHandler ?? throw new ArgumentNullException(nameof(queryHandler));
     }
 
     [HttpGet("{email}", Name = "GetUserByEmail")]
     public async Task<ActionResult<UserDto?>> GetUserByEmail(string email, CancellationToken cancellationToken = default)
     {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var provider = scope.ServiceProvider;
-        var sender = provider.GetRequiredService<IQueryHandler<GetUserByEmailQuery>>();
-
         var getUserByEmailQuery = new GetUserByEmailQuery(email);
-        var result = await sender.Handle(getUserByEmailQuery, cancellationToken);
+        var result = await _queryHandler.Handle(getUserByEmailQuery, cancellationToken);
 
         return result switch
         {
@@ -40,20 +38,16 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<int?>> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<string?>> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default)
     {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var provider = scope.ServiceProvider;
-        var sender = provider.GetRequiredService<ICommandHandler<CreateUserCommand>>();
-
         var command = new CreateUserCommand(createUserDto);
-        var result = await sender.Handle(command, cancellationToken);
+        var result = await _commandHandler.Handle(command, cancellationToken);
 
         return result switch
         {
             { IsFailure: true, Error: not null } => HandleFailureResponse(result.Error),
             Success<int> success =>
-                CreatedAtRoute("GetUserById", new
+                CreatedAtRoute("GetUserByEmail", new
                 {
                     Id = success.Data,
 

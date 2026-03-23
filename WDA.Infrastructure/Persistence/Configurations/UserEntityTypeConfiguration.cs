@@ -42,19 +42,29 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .HasConversion<DateTimeOffset>()
             .IsRequired();
 
+
+        builder.Property(u => u.CreatedAt)
+            .HasColumnType("timestamptz")
+            .HasConversion(u => u,
+                u => DateTime.SpecifyKind(u, DateTimeKind.Utc));
+
+
         builder.Property(u => u.CreatedBy)
             .HasConversion<string>()
             .HasMaxLength(Constants.CreatedByMaxTextLength)
             .IsRequired();
 
         builder.Property(u => u.LastModified)
-            .HasConversion<DateTimeOffset>()
-            .IsRequired();
+            .HasColumnType("timestamptz")
+            .IsRequired(false)
+            .HasConversion(
+                u => u,
+                u => DateTime.SpecifyKind(u ?? default, DateTimeKind.Utc));
 
         builder.Property(u => u.LastModifiedBy)
             .HasConversion<string>()
             .HasMaxLength(Constants.LastModifiedByMaxTextLength)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.HasIndex(u => u.Id);
 

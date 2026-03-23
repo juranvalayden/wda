@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WDA.Domain.Common;
-using WDA.Domain.Entities;
 using WDA.Domain.Repositories;
 using WDA.Infrastructure.Persistence;
 using WDA.Infrastructure.Repositories;
@@ -21,6 +21,7 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString, builder =>
             {
                 builder.MigrationsAssembly(typeof(WdaDbContext).Assembly.FullName);
+                builder.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "Wda");
             });
         });
 

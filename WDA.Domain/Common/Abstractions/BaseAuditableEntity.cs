@@ -2,11 +2,11 @@
 
 public abstract record BaseAuditableEntity<T> : BaseEntity<T>
 {
-    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public string CreatedBy { get; set; } = "System";
 
-    public DateTimeOffset LastModified { get; set; }
+    public DateTime? LastModified { get; set; }
 
     public string? LastModifiedBy { get; set; }
 }

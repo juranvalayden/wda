@@ -15,9 +15,9 @@ public class WdaDbContext : DbContext, IUnitOfWork
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
         modelBuilder.HasDefaultSchema("Wda");
         modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+
+        base.OnModelCreating(modelBuilder);
     }
 }
