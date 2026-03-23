@@ -14,6 +14,9 @@
   <Folder Name="/src/server/4 - Domain/">
     <Project Path="WDA.Domain/WDA.Domain.csproj" />
   </Folder>
+  <Folder Name="/src/server/5 - Shared/">
+    <Project Path="WDA.Shared/WDA.Shared.csproj" Id="0349c8ad-99ef-4a93-b2eb-34a530566a4d" />
+  </Folder>
   <Folder Name="/tests/" />
   <Folder Name="/tests/client tests/" />
   <Folder Name="/tests/server tests/" />

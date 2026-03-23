@@ -6,9 +6,9 @@ namespace WDA.WebApi.Controllers;
 [Route("api/users")]
 public class UserController : ControllerBase
 {
-    [HttpGet]
-    public ActionResult<int> Get()
+    [HttpGet("{email}", Name = "GetUserByEmail")]
+    public ActionResult<int> GetUserByEmailAsync(string email)
     {
-        return Ok(4);
+        return 10;
     }
 }
