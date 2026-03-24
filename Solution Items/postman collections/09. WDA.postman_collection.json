@@ -1,0 +1,159 @@
+{
+  "info": {
+    "_postman_id": "cb136e10-11df-4be7-a9e9-86b4e107d813",
+    "name": "09. WDA",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "26302119"
+  },
+  "item": [
+    {
+      "name": "GET-user-by-email-found",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:7146/api/users/juran.valayden@test.test",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7146",
+          "path": [
+            "api",
+            "users",
+            "juran.valayden@test.test"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET-user-by-email-not-found",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:7146/api/users/juran.valayden@test.xyz",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7146",
+          "path": [
+            "api",
+            "users",
+            "juran.valayden@test.xyz"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST-create-new-user",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Pre-request Script in Postman\r",
+              "\r",
+              "// Define the lists\r",
+              "const firstNames = [\r",
+              "  \"Orlando\",\"Keith\",\"Donna\",\"Janet\",\"Lucy\",\"Rosmarie\",\"Dominic\",\"Kathleen\",\r",
+              "  \"Katherine\",\"Johnny\",\"Christopher\",\"David\",\"John\",\"Jean\",\"Jinghao\",\"Linda\",\r",
+              "  \"Kerim\",\"Kevin\",\"Donald\",\"Jackie\"\r",
+              "];\r",
+              "\r",
+              "const lastNames = [\r",
+              "  \"Gee\",\"Harris\",\"Carreras\",\"Gates\",\"Harrington\",\"Carroll\",\"Gash\",\"Garza\",\r",
+              "  \"Harding\",\"Caprio\",\"Beck\",\"Liu\",\"Beaver\",\"Handley\",\"Liu\",\"Burnett\",\"Hanif\",\r",
+              "  \"Liu\",\"Blanton\",\"Blackwell\"\r",
+              "];\r",
+              "\r",
+              "// Pick random first and last names\r",
+              "const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];\r",
+              "const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];\r",
+              "\r",
+              "// Construct email\r",
+              "const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@test.test`;\r",
+              "\r",
+              "// Generate a strong password\r",
+              "function generatePassword() {\r",
+              "    const length = 12; // ensure > 10\r",
+              "    const uppercase = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\r",
+              "    const lowercase = \"abcdefghijklmnopqrstuvwxyz\";\r",
+              "    const numbers = \"0123456789\";\r",
+              "    const special = \"!@#$%^&*()_+[]{}<>?\";\r",
+              "    \r",
+              "    // Ensure at least one of each required type\r",
+              "    let password = \"\";\r",
+              "    password += uppercase[Math.floor(Math.random() * uppercase.length)];\r",
+              "    password += numbers[Math.floor(Math.random() * numbers.length)];\r",
+              "    password += special[Math.floor(Math.random() * special.length)];\r",
+              "    \r",
+              "    // Fill the rest randomly\r",
+              "    const allChars = uppercase + lowercase + numbers + special;\r",
+              "    for (let i = password.length; i < length; i++) {\r",
+              "        password += allChars[Math.floor(Math.random() * allChars.length)];\r",
+              "    }\r",
+              "    \r",
+              "    // Shuffle the password to avoid predictable order\r",
+              "    return password.split('').sort(() => 0.5 - Math.random()).join('');\r",
+              "}\r",
+              "\r",
+              "const password = generatePassword();\r",
+              "\r",
+              "// Build JSON object\r",
+              "const userData = {\r",
+              "  firstName: firstName,\r",
+              "  lastName: lastName,\r",
+              "  email: email,\r",
+              "  password: password\r",
+              "};\r",
+              "\r",
+              "// Save JSON stringified object to environment variable\r",
+              "pm.environment.set(\"userData\", JSON.stringify(userData));"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{{userData}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:7146/api/users",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7146",
+          "path": [
+            "api",
+            "users"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

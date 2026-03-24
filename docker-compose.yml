@@ -14,18 +14,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
+      
   api:
     build:
       context: .
@@ -34,9 +23,7 @@ services:
       - "8080:8080"
     depends_on:
       postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+        condition: service_healthy      
 
 volumes:
   postgres_data:

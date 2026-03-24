@@ -1,21 +1,25 @@
 <Solution>
+  <Folder Name="/Solution Items/" />
+  <Folder Name="/Solution Items/postman collections/">
+    <File Path="Solution Items/postman collections/09. WDA.postman_collection.json" />
+  </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/client/" />
   <Folder Name="/src/server/" />
   <Folder Name="/src/server/1 - Presentation/">
-    <Project Path="WDA.WebApi/WDA.WebApi.csproj" />
+    <Project Path="src/server/WDA.WebApi/WDA.WebApi.csproj" />
   </Folder>
   <Folder Name="/src/server/2 - Application/">
-    <Project Path="WDA.Application/WDA.Application.csproj" />
+    <Project Path="src/server/WDA.Application/WDA.Application.csproj" />
   </Folder>
   <Folder Name="/src/server/3 - Infrastructure/">
-    <Project Path="WDA.Infrastructure/WDA.Infrastructure.csproj" />
+    <Project Path="src/server/WDA.Infrastructure/WDA.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/server/4 - Domain/">
-    <Project Path="WDA.Domain/WDA.Domain.csproj" />
+    <Project Path="src/server/WDA.Domain/WDA.Domain.csproj" />
   </Folder>
   <Folder Name="/src/server/5 - Shared/">
-    <Project Path="WDA.Shared/WDA.Shared.csproj" Id="0349c8ad-99ef-4a93-b2eb-34a530566a4d" />
+    <Project Path="src/server/WDA.Shared/WDA.Shared.csproj" />
   </Folder>
   <Folder Name="/tests/" />
   <Folder Name="/tests/client tests/" />
