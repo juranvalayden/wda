@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using WDA.Application.Dtos;
 using WDA.Shared;
 
 namespace WDA.Application.Users.Commands.CreateUserCommand;

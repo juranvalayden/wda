@@ -2,9 +2,10 @@
 
 public enum ErrorType
 {
+    None,
+    Null,
     NotFound,
     AlreadyExists,
     ErrorSaving,
-    None,
-    Null
+    ValidationErrors
 }

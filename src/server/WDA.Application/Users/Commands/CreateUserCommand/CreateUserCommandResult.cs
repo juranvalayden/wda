@@ -1,3 +1,5 @@
-﻿namespace WDA.Application.Users.Commands.CreateUserCommand;
+﻿using WDA.Shared.Errors;
 
-public record CreateUserCommandResult(int? Id);
+namespace WDA.Application.Users.Commands.CreateUserCommand;
+
+public record CreateUserCommandResult(Result Result);

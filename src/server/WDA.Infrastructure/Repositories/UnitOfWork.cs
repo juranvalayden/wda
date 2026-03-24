@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WDA.Domain.Common;
+﻿using WDA.Domain.Common;
 using WDA.Domain.Entities;
 using WDA.Infrastructure.Persistence;
 

@@ -1,5 +1,5 @@
 ﻿namespace WDA.Application.Abstractions.Common;
 
-public interface ICommand : IBaseCommand;
+public interface ICommand : IRequest;
 
-public interface ICommand<TResponse> : IBaseCommand;
+public interface ICommand<out TResponse> : IRequest<TResponse>;

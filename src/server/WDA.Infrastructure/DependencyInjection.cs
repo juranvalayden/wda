@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WDA.Domain.Common;
-using WDA.Domain.Repositories;
 using WDA.Infrastructure.Persistence;
 using WDA.Infrastructure.Repositories;
 

@@ -1,6 +1,6 @@
 ﻿namespace WDA.Shared.Errors;
 
-public abstract class Result
+public class Result
 {
     public bool IsFailure { get; set; }
     public Error? Error { get; set; }

@@ -15,7 +15,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly, includeInternalTypes: true);
 
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<ICommandHandler<CreateUserCommand>, CreateUserCommandHandler>();
-        services.AddScoped<IQueryHandler<GetUserByEmailQuery>, GetUserByEmailQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateUserCommand, CreateUserCommandResult>, CreateUserCommandHandler>();
+        services.AddScoped<IQueryHandler<GetUserByEmailQuery, GetUserByEmailResult>, GetUserByEmailQueryHandler>();
     }
 }

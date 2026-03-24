@@ -3,4 +3,4 @@ using WDA.Application.Dtos;
 
 namespace WDA.Application.Users.Commands.CreateUserCommand;
 
-public record CreateUserCommand(CreateUserDto CreateUserDto) : ICommand;
+public record CreateUserCommand(CreateUserDto CreateUserDto) : ICommand<CreateUserCommandResult>;

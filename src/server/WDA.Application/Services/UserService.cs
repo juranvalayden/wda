@@ -2,6 +2,7 @@
 using WDA.Application.Interfaces;
 using WDA.Application.Mappers;
 using WDA.Domain.Common;
+using WDA.Shared.Errors;
 
 namespace WDA.Application.Services;
 
@@ -14,28 +15,32 @@ public class UserService : IUserService
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    public async Task<UserDto?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+    public async Task<Result> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         var user = await _unitOfWork.UserRepository.GetAsync(
             predicate: u => u.Email == email,
             shouldIncludeTracking: false,
             cancellationToken: cancellationToken);
 
-        return user is not null
-            ? UserMapper.MapToDto(user)
-            : null;
+        if (user == null)
+        {
+            return UserErrors.NotFound(email);
+        }
+
+        var userDto = UserMapper.MapToDto(user);
+        return Result<UserDto>.Success(userDto);
     }
 
-    public async Task<bool> UserExistsAsync(string email, CancellationToken cancellationToken = default)
+    public async Task<Result> UserExistsAsync(string email, CancellationToken cancellationToken = default)
     {
         var exists = await _unitOfWork.UserRepository.ExistsAsync(
             predicate: u => u.Email == email,
             cancellationToken: cancellationToken);
 
-        return exists;
+        return Result<bool>.Success(exists);
     }
 
-    public async Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default)
+    public async Task<Result> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default)
     {
         var createdUser = UserMapper.MapToEntity(createUserDto);
 
@@ -43,8 +48,7 @@ public class UserService : IUserService
 
         var hasSaved = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return hasSaved
-            ? UserMapper.MapToDto(user)
-            : null;
+        var userDto = UserMapper.MapToDto(user);
+        return Result<UserDto>.Success(userDto);
     }
 }

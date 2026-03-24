@@ -2,7 +2,7 @@
 
 public class Success<T> : Result<T>
 {
-    public T Data { get; }
+    public T Data { get; init; }
 
     private Success(bool isFailure, Error? error, T data) : base(isFailure, error)
     {

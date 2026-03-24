@@ -1,11 +1,11 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WDA.Application.Abstractions.Common;
 using WDA.Application.Dtos;
 using WDA.Application.Users.Commands.CreateUserCommand;
 using WDA.Application.Users.Queries.GetUserByEmail;
 using WDA.Shared.Errors;
-using Error = WDA.Shared.Errors.Error;
 
 namespace WDA.WebApi.Controllers;
 
@@ -14,14 +14,14 @@ namespace WDA.WebApi.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    private readonly ICommandHandler<CreateUserCommand> _commandHandler;
-    private readonly IQueryHandler<GetUserByEmailQuery> _queryHandler;
+    private readonly ICommandHandler<CreateUserCommand, CreateUserCommandResult> _commandHandler;
+    private readonly IQueryHandler<GetUserByEmailQuery, GetUserByEmailResult> _queryHandler;
     private readonly IValidator<CreateUserCommand> _commandValidator;
     private readonly IValidator<GetUserByEmailQuery> _queryValidator;
 
-    public UserController(ILogger<UserController> logger, 
-        ICommandHandler<CreateUserCommand> commandHandler, 
-        IQueryHandler<GetUserByEmailQuery> queryHandler,
+    public UserController(ILogger<UserController> logger,
+        ICommandHandler<CreateUserCommand, CreateUserCommandResult> commandHandler,
+        IQueryHandler<GetUserByEmailQuery, GetUserByEmailResult> queryHandler,
         IValidator<CreateUserCommand> commandValidator,
         IValidator<GetUserByEmailQuery> queryValidator)
     {
@@ -38,21 +38,21 @@ public class UserController : ControllerBase
         var getUserByEmailQuery = new GetUserByEmailQuery(email);
 
         var validationResult = await _queryValidator.ValidateAsync(getUserByEmailQuery, cancellationToken);
-        
+
         if (!validationResult.IsValid)
         {
             _logger.LogWarning("Email validation failed.");
             return BadRequest(validationResult.Errors);
         }
-        
+
         var result = await _queryHandler.Handle(getUserByEmailQuery, cancellationToken);
 
-        return result switch
+        if (result.Result is Success<UserDto> successful)
         {
-            { IsFailure: true, Error: not null } => HandleFailureResponse(result.Error),
-            Success<UserDto> success => Ok(success.Data),
-            _ => BadRequest()
-        };
+            return Ok(successful.Data);
+        }
+
+        return HandleFailureResponse(result.Result.Error!);
     }
 
     [HttpPost]
@@ -68,36 +68,20 @@ public class UserController : ControllerBase
             return BadRequest(validationResult.Errors);
         }
 
-        var commandResult = await _commandHandler.Handle(createUserCommand, cancellationToken);
+        var result = await _commandHandler.Handle(createUserCommand, cancellationToken);
 
-        if (commandResult.IsFailure)
+        if (result.Result is Success<UserDto> successful)
         {
-            HandleFailureResponse(commandResult.Error!);
+            return CreatedAtRoute(
+                "GetUserByEmail",
+                new
+                {
+                    email = successful.Data.Email,
+                },
+                successful.Data);
         }
 
-        if (commandResult is not Success<string> commandSuccess || string.IsNullOrWhiteSpace(commandSuccess.Data))
-            return BadRequest();
-
-        var email = commandSuccess.Data;
-
-        var queryResult = await _queryHandler.Handle(new GetUserByEmailQuery(email), cancellationToken);
-
-        if (commandResult.IsFailure)
-        {
-            HandleFailureResponse(commandResult.Error!);
-        }
-
-        if (queryResult is not Success<UserDto> { Data: not null } querySuccess) return BadRequest();
-
-        var userDto = querySuccess.Data;
-
-        return CreatedAtRoute(
-            "GetUserByEmail",
-            new
-            {
-                email = userDto.Email,
-            },
-            userDto);
+        return HandleFailureResponse(result.Result.Error!);
     }
 
     private ActionResult HandleFailureResponse(Error error)

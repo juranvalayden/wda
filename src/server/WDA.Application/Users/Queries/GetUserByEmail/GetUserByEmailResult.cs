@@ -1,5 +1,5 @@
-﻿using WDA.Application.Dtos;
+﻿using WDA.Shared.Errors;
 
 namespace WDA.Application.Users.Queries.GetUserByEmail;
 
-public record GetUserByEmailResult(UserDto? UserDto);
+public record GetUserByEmailResult(Result Result);
