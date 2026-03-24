@@ -16,9 +16,9 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
 
     public async Task<Response> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var exists = await _userService.UserExistsAsync(request.CreateUserDto.Email, cancellationToken);
+        var userAlreadyExists = await _userService.UserExistsAsync(request.CreateUserDto.Email, cancellationToken);
 
-        if (exists)
+        if (userAlreadyExists)
         {
             return UserErrors.AlreadyExists(request.CreateUserDto.Email);
         }
