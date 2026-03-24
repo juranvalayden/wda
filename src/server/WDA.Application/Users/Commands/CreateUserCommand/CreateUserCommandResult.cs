@@ -1,5 +1,5 @@
-﻿using WDA.Shared.Errors;
+﻿using WDA.Application.Dtos;
 
 namespace WDA.Application.Users.Commands.CreateUserCommand;
 
-public record CreateUserCommandResult(Result Result);
+public record CreateUserCommandResult(UserDto? UserDto);

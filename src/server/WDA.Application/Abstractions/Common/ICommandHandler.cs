@@ -1,6 +1,9 @@
-﻿namespace WDA.Application.Abstractions.Common;
+﻿using WDA.Shared.Errors;
 
-public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand> where TCommand : ICommand;
+namespace WDA.Application.Abstractions.Common;
 
-public interface ICommandHandler<in TCommand, TResponse> : IRequestHandler<TCommand, TResponse>
-    where TCommand : ICommand<TResponse>;
+public interface ICommandHandler<in TCommand> : IHandler<TCommand> where TCommand : ICommand;
+
+public interface ICommandHandler<in TCommand, TResponse> : IHandler<TCommand, TResponse>
+    where TCommand : ICommand<TResponse>
+    where TResponse : Response;

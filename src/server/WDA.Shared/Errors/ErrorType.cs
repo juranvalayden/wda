@@ -5,5 +5,6 @@ public enum ErrorType
     None,
     Null,
     NotFound,
-    AlreadyExists
+    AlreadyExists,
+    ErrorCreatingUser
 }

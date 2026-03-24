@@ -9,15 +9,13 @@ public abstract class GenericRepository<T> : IRepository<T> where T : class
 {
     private readonly DbSet<T> _dbSet;
 
-    public GenericRepository(WdaDbContext wdaDbContext)
+    protected GenericRepository(WdaDbContext wdaDbContext)
     {
         var dbContext = wdaDbContext ?? throw new ArgumentNullException(nameof(wdaDbContext));
         _dbSet = dbContext.Set<T>();
     }
 
-    public virtual async Task<T?> GetAsync(Expression<Func<T, bool>> predicate, 
-        bool shouldIncludeTracking = false, 
-        CancellationToken cancellationToken = default)
+    public virtual async Task<T?> GetAsync(Expression<Func<T, bool>> predicate, bool shouldIncludeTracking = false, CancellationToken cancellationToken = default)
     {
         if (shouldIncludeTracking)
         {

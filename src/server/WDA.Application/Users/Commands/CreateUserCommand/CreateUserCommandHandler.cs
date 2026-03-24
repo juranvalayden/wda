@@ -1,10 +1,11 @@
 ﻿using WDA.Application.Abstractions.Common;
+using WDA.Application.Dtos;
 using WDA.Application.Interfaces;
 using WDA.Shared.Errors;
 
 namespace WDA.Application.Users.Commands.CreateUserCommand;
 
-public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, CreateUserCommandResult>
+public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
 {
     private readonly IUserService _userService;
 
@@ -13,13 +14,22 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, Creat
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
-    public async Task<CreateUserCommandResult> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var userExistsResult = await _userService.UserExistsAsync(request.CreateUserDto.Email, cancellationToken);
+        var exists = await _userService.UserExistsAsync(request.CreateUserDto.Email, cancellationToken);
 
-        if (userExistsResult is not Success<bool> { Data: false }) return new CreateUserCommandResult(Result: userExistsResult);
+        if (exists)
+        {
+            return UserErrors.AlreadyExists(request.CreateUserDto.Email);
+        }
 
-        var result = await _userService.CreateUserAsync(request.CreateUserDto, cancellationToken);
-        return new CreateUserCommandResult(result);
+        var createdUserDto = await _userService.CreateUserAsync(request.CreateUserDto, cancellationToken);
+
+        if (createdUserDto == null)
+        {
+            return UserErrors.ErrorCreatingUser();
+        }
+
+        return Response<UserDto>.Success(createdUserDto);
     }
 }

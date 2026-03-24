@@ -1,9 +1,11 @@
 ﻿using WDA.Application.Abstractions.Common;
+using WDA.Application.Dtos;
 using WDA.Application.Interfaces;
+using WDA.Shared.Errors;
 
 namespace WDA.Application.Users.Queries.GetUserByEmail;
 
-public class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery, GetUserByEmailResult>
+public class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery>
 {
     private readonly IUserService _userService;
 
@@ -12,9 +14,16 @@ public class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery, Get
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
-    public async Task<GetUserByEmailResult> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
-        var result = await _userService.GetUserByEmailAsync(request.Email, cancellationToken);
-        return new GetUserByEmailResult(result);
+        var userDto = await _userService.GetUserByEmailAsync(request.Email, cancellationToken);
+
+        if (userDto == null)
+        {
+            return UserErrors.NotFound(request.Email);
+        }
+
+        return Response<UserDto>.Success(userDto);
     }
+
 }

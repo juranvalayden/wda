@@ -1,3 +1,7 @@
-﻿namespace WDA.Application.Abstractions.Common;
+﻿using WDA.Shared.Errors;
 
-public interface IQuery<out TResponse> : IRequest<TResponse>;
+namespace WDA.Application.Abstractions.Common;
+
+public interface IQuery : IRequest;
+
+public interface IQuery<out TResponse> : IRequest<TResponse> where TResponse : Response;

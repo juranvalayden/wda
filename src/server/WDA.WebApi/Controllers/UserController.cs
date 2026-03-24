@@ -37,15 +37,15 @@ public class UserController : ControllerBase
             return BadRequest(validationResult.Errors);
         }
 
-        var sender = provider.GetRequiredService<IQueryHandler<GetUserByEmailQuery, GetUserByEmailResult>>();
-        var result = await sender.Handle(getUserByEmailQuery, cancellationToken);
+        var sender = provider.GetRequiredService<IQueryHandler<GetUserByEmailQuery>>();
+        var response = await sender.Handle(getUserByEmailQuery, cancellationToken);
 
-        if (result.Result is Success<UserDto> successful)
+        if (response.IsSuccess && response is Response<UserDto> success)
         {
-            return Ok(successful.Data);
+            return Ok(success.Data);
         }
 
-        return HandleFailureResponse(result.Result.Error!);
+        return HandleFailureResponse(response.Error!);
     }
 
     [HttpPost]
@@ -64,26 +64,26 @@ public class UserController : ControllerBase
             return BadRequest(validationResult.Errors);
         }
 
-        var sender = provider.GetRequiredService<ICommandHandler<CreateUserCommand, CreateUserCommandResult>>();
-        var result = await sender.Handle(createUserCommand, cancellationToken);
+        var sender = provider.GetRequiredService<ICommandHandler<CreateUserCommand>>();
+        var response = await sender.Handle(createUserCommand, cancellationToken);
 
-        if (result.Result is Success<UserDto> successful)
+        if (response.IsSuccess && response is Response<UserDto> success)
         {
-            return CreatedAt(successful);
+            return CreatedAt(success.Data!);
         }
 
-        return HandleFailureResponse(result.Result.Error!);
+        return HandleFailureResponse(response.Error!);
     }
 
-    private CreatedAtRouteResult CreatedAt(Success<UserDto> successful)
+    private CreatedAtRouteResult CreatedAt(UserDto userDto)
     {
         return CreatedAtRoute(
             "GetUserByEmail",
             new
             {
-                email = successful.Data.Email
+                email = userDto.Email
             },
-            successful.Data);
+            userDto);
     }
 
     private ActionResult HandleFailureResponse(Error error)

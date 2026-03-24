@@ -16,23 +16,17 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public async Task<User?> GetUserByEmailAsync(string email, bool includeTracking = false, CancellationToken cancellationToken = default)
     {
-        User? user;
-
         if (includeTracking)
         {
-            user = await _wdaDbContext
+            return await _wdaDbContext
                 .Users
                 .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
-
-            return user;
         }
 
-        user = await _wdaDbContext
+        return await _wdaDbContext
             .Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
-
-        return user;
     }
 
     public async Task<bool> UserExistsAsync(string email, CancellationToken cancellationToken = default)
