@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WDA.Application.Abstractions.Common;
 using WDA.Application.Dtos;
@@ -14,30 +13,23 @@ namespace WDA.WebApi.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    private readonly ICommandHandler<CreateUserCommand, CreateUserCommandResult> _commandHandler;
-    private readonly IQueryHandler<GetUserByEmailQuery, GetUserByEmailResult> _queryHandler;
-    private readonly IValidator<CreateUserCommand> _commandValidator;
-    private readonly IValidator<GetUserByEmailQuery> _queryValidator;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public UserController(ILogger<UserController> logger,
-        ICommandHandler<CreateUserCommand, CreateUserCommandResult> commandHandler,
-        IQueryHandler<GetUserByEmailQuery, GetUserByEmailResult> queryHandler,
-        IValidator<CreateUserCommand> commandValidator,
-        IValidator<GetUserByEmailQuery> queryValidator)
+    public UserController(ILogger<UserController> logger, IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _commandHandler = commandHandler ?? throw new ArgumentNullException(nameof(commandHandler));
-        _queryHandler = queryHandler ?? throw new ArgumentNullException(nameof(queryHandler));
-        _commandValidator = commandValidator ?? throw new ArgumentNullException(nameof(commandValidator));
-        _queryValidator = queryValidator ?? throw new ArgumentNullException(nameof(queryValidator));
+        _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
     }
 
     [HttpGet("{email}", Name = "GetUserByEmail")]
     public async Task<ActionResult<UserDto?>> GetUserByEmail(string email, CancellationToken cancellationToken = default)
     {
-        var getUserByEmailQuery = new GetUserByEmailQuery(email);
+        using var scope = _serviceScopeFactory.CreateScope();
+        var provider = scope.ServiceProvider;
+        var validator = provider.GetRequiredService<IValidator<GetUserByEmailQuery>>();
 
-        var validationResult = await _queryValidator.ValidateAsync(getUserByEmailQuery, cancellationToken);
+        var getUserByEmailQuery = new GetUserByEmailQuery(email);
+        var validationResult = await validator.ValidateAsync(getUserByEmailQuery, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -45,7 +37,8 @@ public class UserController : ControllerBase
             return BadRequest(validationResult.Errors);
         }
 
-        var result = await _queryHandler.Handle(getUserByEmailQuery, cancellationToken);
+        var sender = provider.GetRequiredService<IQueryHandler<GetUserByEmailQuery, GetUserByEmailResult>>();
+        var result = await sender.Handle(getUserByEmailQuery, cancellationToken);
 
         if (result.Result is Success<UserDto> successful)
         {
@@ -58,9 +51,12 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<string?>> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default)
     {
-        var createUserCommand = new CreateUserCommand(createUserDto);
+        using var scope = _serviceScopeFactory.CreateScope();
+        var provider = scope.ServiceProvider;
+        var validator = provider.GetRequiredService<IValidator<CreateUserCommand>>();
 
-        var validationResult = await _commandValidator.ValidateAsync(createUserCommand, cancellationToken);
+        var createUserCommand = new CreateUserCommand(createUserDto);
+        var validationResult = await validator.ValidateAsync(createUserCommand, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -68,20 +64,26 @@ public class UserController : ControllerBase
             return BadRequest(validationResult.Errors);
         }
 
-        var result = await _commandHandler.Handle(createUserCommand, cancellationToken);
+        var sender = provider.GetRequiredService<ICommandHandler<CreateUserCommand, CreateUserCommandResult>>();
+        var result = await sender.Handle(createUserCommand, cancellationToken);
 
         if (result.Result is Success<UserDto> successful)
         {
-            return CreatedAtRoute(
-                "GetUserByEmail",
-                new
-                {
-                    email = successful.Data.Email,
-                },
-                successful.Data);
+            return CreatedAt(successful);
         }
 
         return HandleFailureResponse(result.Result.Error!);
+    }
+
+    private CreatedAtRouteResult CreatedAt(Success<UserDto> successful)
+    {
+        return CreatedAtRoute(
+            "GetUserByEmail",
+            new
+            {
+                email = successful.Data.Email
+            },
+            successful.Data);
     }
 
     private ActionResult HandleFailureResponse(Error error)
@@ -92,7 +94,6 @@ public class UserController : ControllerBase
         {
             ErrorType.NotFound => NotFound(description),
             ErrorType.AlreadyExists => Conflict(description),
-            ErrorType.ErrorSaving => BadRequest(description),
             _ => BadRequest()
         };
     }

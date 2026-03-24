@@ -5,7 +5,5 @@ public enum ErrorType
     None,
     Null,
     NotFound,
-    AlreadyExists,
-    ErrorSaving,
-    ValidationErrors
+    AlreadyExists
 }

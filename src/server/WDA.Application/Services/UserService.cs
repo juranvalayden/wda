@@ -37,7 +37,12 @@ public class UserService : IUserService
             predicate: u => u.Email == email,
             cancellationToken: cancellationToken);
 
-        return Result<bool>.Success(exists);
+        if (exists)
+        {
+            return UserErrors.AlreadyExists(email);
+        }
+
+        return Result<bool>.Success(false);
     }
 
     public async Task<Result> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default)
