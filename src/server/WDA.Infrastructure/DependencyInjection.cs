@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WDA.Domain.Common;
 using WDA.Infrastructure.Persistence;
-using WDA.Infrastructure.Repositories;
+using WDA.Infrastructure.Persistence.Repositories;
 
 namespace WDA.Infrastructure;
 

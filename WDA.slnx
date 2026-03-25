@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/Solution Items/" />
+  <Folder Name="/Solution Items/">
+    <File Path="Dockerfile" />
+  </Folder>
   <Folder Name="/Solution Items/postman collections/">
     <File Path="Solution Items/postman collections/09. WDA.postman_collection.json" />
   </Folder>
@@ -22,6 +24,7 @@
     <Project Path="src/server/WDA.Shared/WDA.Shared.csproj" />
   </Folder>
   <Folder Name="/tests/" />
-  <Folder Name="/tests/client tests/" />
-  <Folder Name="/tests/server tests/" />
+  <Folder Name="/tests/server tests/">
+    <Project Path="tests/server tests/WDA.Tests/WDA.Tests.csproj" Id="933e918f-9fa4-4692-b846-ca7f2a2c6076" />
+  </Folder>
 </Solution>

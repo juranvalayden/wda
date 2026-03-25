@@ -50,10 +50,11 @@ namespace WDA.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<DateTime?>("LastModified")
+                    b.Property<DateTime>("LastModifiedAt")
                         .HasColumnType("timestamptz");
 
                     b.Property<string>("LastModifiedBy")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
@@ -74,7 +75,7 @@ namespace WDA.Infrastructure.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("Users", "wda");
+                    b.ToTable("Users", "Wda");
                 });
 #pragma warning restore 612, 618
         }

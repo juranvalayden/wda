@@ -12,8 +12,8 @@ using WDA.Infrastructure.Persistence;
 namespace WDA.Infrastructure.Migrations
 {
     [DbContext(typeof(WdaDbContext))]
-    [Migration("20260324090909_Initial")]
-    partial class Initial
+    [Migration("20260325112329_Inital")]
+    partial class Inital
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,10 +53,11 @@ namespace WDA.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<DateTime?>("LastModified")
+                    b.Property<DateTime>("LastModifiedAt")
                         .HasColumnType("timestamptz");
 
                     b.Property<string>("LastModifiedBy")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
@@ -77,7 +78,7 @@ namespace WDA.Infrastructure.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("Users", "wda");
+                    b.ToTable("Users", "Wda");
                 });
 #pragma warning restore 612, 618
         }

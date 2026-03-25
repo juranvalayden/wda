@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WDA.Domain.Entities;
-using WDA.Infrastructure.Persistence.Configurations;
 
 namespace WDA.Infrastructure.Persistence;
 
@@ -17,6 +16,6 @@ public class WdaDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.HasDefaultSchema("Wda");
-        modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(WdaDbContext).Assembly);
     }
 }

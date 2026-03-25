@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WDA.Domain.Common;
 using WDA.Infrastructure.Persistence;
 
-namespace WDA.Infrastructure.Repositories;
+namespace WDA.Infrastructure.Persistence.Repositories;
 
 public abstract class GenericRepository<T> : IRepository<T> where T : class
 {

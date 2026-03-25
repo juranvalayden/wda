@@ -3,7 +3,7 @@ using WDA.Domain.Entities;
 using WDA.Domain.Repositories;
 using WDA.Infrastructure.Persistence;
 
-namespace WDA.Infrastructure.Repositories;
+namespace WDA.Infrastructure.Persistence.Repositories;
 
 public class UserRepository : GenericRepository<User>, IUserRepository
 {

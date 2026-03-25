@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using WDA.Domain.Common;
 using WDA.Domain.Entities;
-using WDA.Infrastructure.Persistence;
 
-namespace WDA.Infrastructure.Repositories;
+namespace WDA.Infrastructure.Persistence.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {

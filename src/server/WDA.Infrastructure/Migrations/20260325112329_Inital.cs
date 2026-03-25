@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -6,17 +7,17 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WDA.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Inital : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "wda");
+                name: "Wda");
 
             migrationBuilder.CreateTable(
                 name: "Users",
-                schema: "wda",
+                schema: "Wda",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -27,8 +28,8 @@ namespace WDA.Infrastructure.Migrations
                     Password = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamptz", nullable: false),
                     CreatedBy = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    LastModified = table.Column<DateTime>(type: "timestamptz", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
+                    LastModifiedAt = table.Column<DateTime>(type: "timestamptz", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,14 +38,14 @@ namespace WDA.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
-                schema: "wda",
+                schema: "Wda",
                 table: "Users",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Id",
-                schema: "wda",
+                schema: "Wda",
                 table: "Users",
                 column: "Id");
         }
@@ -54,7 +55,7 @@ namespace WDA.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Users",
-                schema: "wda");
+                schema: "Wda");
         }
     }
 }

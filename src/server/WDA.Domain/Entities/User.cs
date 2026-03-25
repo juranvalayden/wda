@@ -2,4 +2,4 @@
 
 namespace WDA.Domain.Entities;
 
-public record User(string FirstName, string LastName, string Email, string Password) : BaseAuditableEntity<int>;
+public record User(string FirstName, string LastName, string Email, string Password) : BaseAuditableEntity;

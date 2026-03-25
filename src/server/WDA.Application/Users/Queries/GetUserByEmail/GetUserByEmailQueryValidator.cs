@@ -10,8 +10,6 @@ public class GetUserByEmailQueryValidator : AbstractValidator<GetUserByEmailQuer
         RuleFor(u => u.Email)
             .NotEmpty()
             .EmailAddress()
-            .WithMessage("Invalid email address format.")
-            .MaximumLength(Constants.EmailMaxTextLength)
-            .WithMessage($"Email address must not exceed {Constants.EmailMaxTextLength} characters.");
+            .MaximumLength(Constants.EmailMaxTextLength);
     }
 }

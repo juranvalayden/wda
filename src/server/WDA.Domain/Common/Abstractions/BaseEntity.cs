@@ -1,6 +1,6 @@
 ﻿namespace WDA.Domain.Common.Abstractions;
 
-public abstract record BaseEntity<T>
+public abstract record BaseEntity : IEntity
 {
-    public T Id { get; set; }
+    public virtual int Id { get; set; }
 }

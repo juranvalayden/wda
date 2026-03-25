@@ -11,9 +11,17 @@ public static class UserMapper
             user.LastName, 
             user.Email);
 
-    public static User MapToEntity(CreateUserDto createUserDto) => 
-        new(createUserDto.FirstName, 
+    public static User MapToEntity(CreateUserDto createUserDto)
+    {
+        var currentDateTime = DateTime.UtcNow;
+
+        var user = new User(createUserDto.FirstName, 
             createUserDto.LastName,
-            createUserDto.Email, 
+            createUserDto.Email,
             createUserDto.Password);
+
+        user.OnEntityCreated(user.Email, currentDateTime);
+
+        return user;
+    }
 }
