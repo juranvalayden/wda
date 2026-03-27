@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using WDA.Application.Abstractions.Common;
@@ -19,54 +17,27 @@ namespace WDA.Tests.AuthenticationControllerTests;
 [TestFixture]
 public class AuthenticationControllerTests
 {
-    private Mock<ILogger<AuthenticationController>> _loggerMock = null!;
-    private Mock<IServiceScopeFactory> _scopeFactoryMock = null!;
-    private Mock<IServiceScope> _scopeMock = null!;
-    private Mock<IServiceProvider> _providerMock = null!;
+    private TestServiceScopeHelper<AuthenticationController> _testServiceScopeHelper = null!;
+    private AuthenticationController? _testController;
 
     [SetUp]
     public void SetUp()
     {
-        _loggerMock = new Mock<ILogger<AuthenticationController>>();
-        _scopeFactoryMock = new Mock<IServiceScopeFactory>();
-        _scopeMock = new Mock<IServiceScope>();
-        _providerMock = new Mock<IServiceProvider>();
-
-        _scopeMock.Setup(s => s.ServiceProvider).Returns(_providerMock.Object);
-        _scopeFactoryMock.Setup(f => f.CreateScope()).Returns(_scopeMock.Object);
+        _testServiceScopeHelper = new TestServiceScopeHelper<AuthenticationController>();
+        _testController = new AuthenticationController(_testServiceScopeHelper.LoggerMock.Object, _testServiceScopeHelper.ScopeFactoryMock.Object);
     }
 
-    private void SetupValidatorFor<TCommand>(IValidator<TCommand> validator)
-        where TCommand : class
+    [TearDown]
+    public void TearDown()
     {
-        _providerMock
-            .Setup(p => p.GetService(typeof(IValidator<TCommand>)))
-            .Returns(validator);
+        _testServiceScopeHelper.Dispose();
+        _testController = null;
     }
-
-    private void SetupHandlerFor<TCommand>(IHandler<TCommand> handler)
-        where TCommand : IRequest
-    {
-        _providerMock
-            .Setup(p => p.GetService(typeof(IHandler<TCommand>)))
-            .Returns(handler);
-    }
-
-    private void SetupHandlerForQuery<TQuery>(IHandler<TQuery> handler)
-        where TQuery : IRequest
-    {
-        _providerMock
-            .Setup(p => p.GetService(typeof(IHandler<TQuery>)))
-            .Returns(handler);
-    }
-
 
     [Test]
     public async Task Register_ReturnsCreatedAt_OnSuccess()
     {
         // Arrange
-        var controller = new AuthenticationController(_loggerMock.Object, _scopeFactoryMock.Object);
-
         var registerDto = TestControllerData.ValidRegisterUserDto();
 
         var validatorMock = new Mock<IValidator<RegisterUserCommand>>();
@@ -74,9 +45,8 @@ public class AuthenticationControllerTests
             .Setup(v => v.ValidateAsync(It.IsAny<RegisterUserCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ValidationResult());
 
-        SetupValidatorFor(validatorMock.Object);
+        _testServiceScopeHelper.SetupValidatorFor(validatorMock.Object);
 
-        // Command handler returns Response<string> with created user id
         var commandHandlerMock = new Mock<IHandler<RegisterUserCommand>>();
         var createdUserId = "user-id-123";
         var commandResponse = Response<string>.Success(createdUserId);
@@ -85,9 +55,8 @@ public class AuthenticationControllerTests
             .Setup(h => h.Handle(It.IsAny<RegisterUserCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(commandResponse);
 
-        SetupHandlerFor(commandHandlerMock.Object);
+        _testServiceScopeHelper.SetupHandlerFor(commandHandlerMock.Object);
 
-        // Query handler returns Response<UserDto>
         var queryHandlerMock = new Mock<IHandler<GetUserByIdQuery>>();
         var userDto = TestControllerData.ValidUserDto(createdUserId);
         var queryResponse = Response<UserDto>.Success(userDto);
@@ -95,10 +64,10 @@ public class AuthenticationControllerTests
             .Setup(h => h.Handle(It.IsAny<GetUserByIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(queryResponse);
 
-        SetupHandlerForQuery(queryHandlerMock.Object);
+        _testServiceScopeHelper.SetupHandlerForQuery(queryHandlerMock.Object);
 
         // Act
-        var result = await controller.Register(registerDto);
+        var result = await _testController!.Register(registerDto);
 
         // Assert
         Assert.IsInstanceOf<CreatedAtRouteResult>(result);
@@ -114,8 +83,6 @@ public class AuthenticationControllerTests
     public async Task Register_ReturnsBadRequest_WhenValidationFails()
     {
         // Arrange
-        var controller = new AuthenticationController(_loggerMock.Object, _scopeFactoryMock.Object);
-
         var registerDto = TestControllerData.InvalidRegisterUserDto();
 
         // Validator that returns invalid result
@@ -132,10 +99,10 @@ public class AuthenticationControllerTests
             .Setup(v => v.ValidateAsync(It.IsAny<RegisterUserCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(invalidResult);
 
-        SetupValidatorFor(validatorMock.Object);
+        _testServiceScopeHelper.SetupValidatorFor(validatorMock.Object);
 
         // Act
-        var result = await controller.Register(registerDto);
+        var result = await _testController!.Register(registerDto);
 
         // Assert
         Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -147,8 +114,6 @@ public class AuthenticationControllerTests
     public async Task Login_ReturnsOk_OnSuccess()
     {
         // Arrange
-        var controller = new AuthenticationController(_loggerMock.Object, _scopeFactoryMock.Object);
-
         var loginDto = TestControllerData.ValidLoginUserDto();
 
         var validatorMock = new Mock<IValidator<LoginUserCommand>>();
@@ -156,7 +121,7 @@ public class AuthenticationControllerTests
             .Setup(v => v.ValidateAsync(It.IsAny<LoginUserCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ValidationResult());
 
-        SetupValidatorFor(validatorMock.Object);
+        _testServiceScopeHelper.SetupValidatorFor(validatorMock.Object);
 
         var commandHandlerMock = new Mock<IHandler<LoginUserCommand>>();
         const string token = "jwt-token-abc";
@@ -165,10 +130,10 @@ public class AuthenticationControllerTests
             .Setup(h => h.Handle(It.IsAny<LoginUserCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(successResponse);
 
-        SetupHandlerFor(commandHandlerMock.Object);
+        _testServiceScopeHelper.SetupHandlerFor(commandHandlerMock.Object);
 
         // Act
-        var result = await controller.Login(loginDto);
+        var result = await _testController!.Login(loginDto);
 
         // Assert
         Assert.IsInstanceOf<OkObjectResult>(result);
@@ -180,8 +145,6 @@ public class AuthenticationControllerTests
     public async Task Login_ReturnsNotFound_OnHandlerErrorNotFound()
     {
         // Arrange
-        var controller = new AuthenticationController(_loggerMock.Object, _scopeFactoryMock.Object);
-
         var loginDto = TestControllerData.InvalidLoginUserDto();
 
         var validatorMock = new Mock<IValidator<LoginUserCommand>>();
@@ -189,7 +152,7 @@ public class AuthenticationControllerTests
             .Setup(v => v.ValidateAsync(It.IsAny<LoginUserCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ValidationResult());
 
-        SetupValidatorFor(validatorMock.Object);
+        _testServiceScopeHelper.SetupValidatorFor(validatorMock.Object);
 
         var commandHandlerMock = new Mock<IHandler<LoginUserCommand>>();
         var error = new Error(ErrorType.NotFound, "User not found");
@@ -199,10 +162,10 @@ public class AuthenticationControllerTests
             .Setup(h => h.Handle(It.IsAny<LoginUserCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResponse);
 
-        SetupHandlerFor(commandHandlerMock.Object);
+        _testServiceScopeHelper.SetupHandlerFor(commandHandlerMock.Object);
 
         // Act
-        var result = await controller.Login(loginDto);
+        var result = await _testController!.Login(loginDto);
 
         // Assert
         Assert.IsInstanceOf<NotFoundObjectResult>(result);
