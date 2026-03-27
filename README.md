@@ -2,7 +2,8 @@
 1. Clone the solution.
 
 ### Powershell cmd
-1. Once the solution is cloned, in the root folder enter the following cmd: docker compose up
+1. Once the solution is cloned
+2. Enter the following cmd: docker compose up in the root folder containing the docker file
 
 ### Unit Tests
 1. UserController tests
