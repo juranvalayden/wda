@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WDA.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using WDA.Infrastructure.Persistence;
 namespace WDA.Infrastructure.Migrations
 {
     [DbContext(typeof(WdaDbContext))]
-    partial class WdaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260327144513_Fix-Application-User")]
+    partial class FixApplicationUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

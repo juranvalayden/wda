@@ -18,6 +18,16 @@ public class ApplicationUser : IdentityUser
     [StringLength(Constants.PasswordMaxTextLength), MinLength(Constants.PasswordMinTextLength)]
     public string ConfirmedPassword { get; set; }
 
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [StringLength(Constants.CreatedByMaxTextLength)]
+    public string CreatedBy { get; set; } = "System";
+
+    public DateTime LastModifiedAt { get; set; } = DateTime.UtcNow;
+
+    [StringLength(Constants.LastModifiedByMaxTextLength)]
+    public string LastModifiedBy { get; set; } = "System";
+
     public ApplicationUser(string firstName, string lastName, string email, string password, string confirmedPassword)
     {
         FirstName = firstName;
