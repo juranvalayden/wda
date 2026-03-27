@@ -1,55 +1,13 @@
 {
   "info": {
-    "_postman_id": "cb136e10-11df-4be7-a9e9-86b4e107d813",
+    "_postman_id": "b59f21a1-7f36-4211-850d-9d571e086afc",
     "name": "09. WDA",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "26302119"
   },
   "item": [
     {
-      "name": "GET-user-by-email-found",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "https://localhost:7146/api/users/juran.valayden@test.test",
-          "protocol": "https",
-          "host": [
-            "localhost"
-          ],
-          "port": "7146",
-          "path": [
-            "api",
-            "users",
-            "juran.valayden@test.test"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "GET-user-by-email-not-found",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "https://localhost:7146/api/users/juran.valayden@test.xyz",
-          "protocol": "https",
-          "host": [
-            "localhost"
-          ],
-          "port": "7146",
-          "path": [
-            "api",
-            "users",
-            "juran.valayden@test.xyz"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "POST-create-new-user",
+      "name": "01. POST-register-new-user (auto gen test data)",
       "event": [
         {
           "listen": "prerequest",
@@ -108,7 +66,8 @@
               "  firstName: firstName,\r",
               "  lastName: lastName,\r",
               "  email: email,\r",
-              "  password: password\r",
+              "  password: password,\r",
+              "  confirmedpassword: password\r",
               "};\r",
               "\r",
               "// Save JSON stringified object to environment variable\r",
@@ -141,19 +100,278 @@
           }
         },
         "url": {
-          "raw": "https://localhost:7146/api/users",
+          "raw": "https://localhost:{{portNumber}}/api/authentication/register",
           "protocol": "https",
           "host": [
             "localhost"
           ],
-          "port": "7146",
+          "port": "{{portNumber}}",
           "path": [
             "api",
-            "users"
+            "authentication",
+            "register"
           ]
         }
       },
       "response": []
+    },
+    {
+      "name": "02. POST-register-new-user (validation fails)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"firstName\": \"Ke\",\r\n    \"lastName\": \"L\",\r\n    \"email\": \"keith.liu@\",\r\n    \"password\": \"pOlom\",\r\n    \"confirmedPassword\": \"pOlom\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:{{portNumber}}/api/authentication/register",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "{{portNumber}}",
+          "path": [
+            "api",
+            "authentication",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03. POST-login-user (valid-user-use-token :)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"test.test@test.test\",\r\n    \"password\": \"PasswordABC123!!!\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:{{portNumber}}/api/authentication/login",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "{{portNumber}}",
+          "path": [
+            "api",
+            "authentication",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04. POST-login-user (invalid-user)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"xyz.test@test.test\",\r\n    \"password\": \"PasswordABC123!!!\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:{{portNumber}}/api/authentication/login",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "{{portNumber}}",
+          "path": [
+            "api",
+            "authentication",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05. GET-user-admin-user (authenticated)",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwtToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:{{portNumber}}/api/users/test.test@test.test",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "{{portNumber}}",
+          "path": [
+            "api",
+            "users",
+            "test.test@test.test"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "06. GET-user-by-email (authenticated-validation-fails)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwtToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:{{portNumber}}/api/users/jtest@test",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "{{portNumber}}",
+          "path": [
+            "api",
+            "users",
+            "jtest@test"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07. GET-user-by-email (unauthorized)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:{{portNumber}}/api/users/juran.valayden@test.xyz",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "{{portNumber}}",
+          "path": [
+            "api",
+            "users",
+            "juran.valayden@test.xyz"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "lport",
+      "value": ""
     }
   ]
 }
