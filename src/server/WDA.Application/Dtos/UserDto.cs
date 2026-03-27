@@ -1,3 +1,3 @@
 ﻿namespace WDA.Application.Dtos;
 
-public record UserDto(int Id, string FirstName, string LastName, string Email);
+public record UserDto(string Id, string FirstName, string LastName, string Email);

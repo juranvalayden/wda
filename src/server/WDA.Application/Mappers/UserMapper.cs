@@ -1,27 +1,20 @@
 ﻿using WDA.Application.Dtos;
-using WDA.Domain.Entities;
+using WDA.Application.Services;
 
 namespace WDA.Application.Mappers;
 
 public static class UserMapper
 {
-    public static UserDto MapToDto(User user) => 
-        new(user.Id,
-            user.FirstName, 
-            user.LastName, 
-            user.Email);
+    public static UserDto MapToDto(ApplicationUser applicationUser) => 
+        new(applicationUser.Id,
+            applicationUser.FirstName, 
+            applicationUser.LastName, 
+            applicationUser?.Email ?? string.Empty);
 
-    public static User MapToEntity(CreateUserDto createUserDto)
-    {
-        var currentDateTime = DateTime.UtcNow;
-
-        var user = new User(createUserDto.FirstName, 
-            createUserDto.LastName,
-            createUserDto.Email,
-            createUserDto.Password);
-
-        user.OnEntityCreated(user.Email, currentDateTime);
-
-        return user;
-    }
+    public static ApplicationUser MapToEntity(RegisterUserDto registerUserDto) =>
+        new(registerUserDto.FirstName, 
+            registerUserDto.LastName, 
+            registerUserDto.Email,
+            registerUserDto.Password,
+            registerUserDto.ConfirmedPassword);
 }

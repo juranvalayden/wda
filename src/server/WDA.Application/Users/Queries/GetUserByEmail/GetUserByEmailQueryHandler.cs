@@ -1,29 +1,30 @@
 ﻿using WDA.Application.Abstractions.Common;
 using WDA.Application.Dtos;
 using WDA.Application.Interfaces;
+using WDA.Application.Mappers;
+using WDA.Application.Services;
 using WDA.Shared.Errors;
 
 namespace WDA.Application.Users.Queries.GetUserByEmail;
 
-public class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery>
+public class GetUserByEmailQueryHandler : IHandler<GetUserByEmailQuery>
 {
-    private readonly IUserService _userService;
+    private readonly IIdentityService _identityService;
 
-    public GetUserByEmailQueryHandler(IUserService userService)
+    public GetUserByEmailQueryHandler(IIdentityService identityService)
     {
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
     }
 
     public async Task<Response> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
-        var userDto = await _userService.GetUserByEmailAsync(request.Email, cancellationToken);
+        var response =  await _identityService.GetUserByEmailAsync(request.Email);
 
-        if (userDto == null)
+        if (response is Response<ApplicationUser> success)
         {
-            return UserErrors.NotFound(request.Email);
+            return Response<UserDto>.Success(UserMapper.MapToDto(success.Data!));
         }
 
-        return Response<UserDto>.Success(userDto);
+        return response;
     }
-
 }

@@ -1,12 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WDA.Domain.Entities;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using WDA.Application.Interfaces;
+using WDA.Application.Services;
 
 namespace WDA.Infrastructure.Persistence;
 
-public class WdaDbContext : DbContext
+public class WdaDbContext : IdentityDbContext<ApplicationUser>, IWdaDbContext
 {
-    public DbSet<User> Users { get; set; } = null!;
-
     public WdaDbContext(DbContextOptions<WdaDbContext> options) : base(options)
     {
     }
@@ -16,6 +17,6 @@ public class WdaDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.HasDefaultSchema("Wda");
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(WdaDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

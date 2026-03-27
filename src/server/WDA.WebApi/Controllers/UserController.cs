@@ -1,13 +1,14 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WDA.Application.Abstractions.Common;
 using WDA.Application.Dtos;
-using WDA.Application.Users.Commands.CreateUserCommand;
 using WDA.Application.Users.Queries.GetUserByEmail;
 using WDA.Shared.Errors;
 
 namespace WDA.WebApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/users")]
 public class UserController : ControllerBase
@@ -46,44 +47,6 @@ public class UserController : ControllerBase
         }
 
         return HandleFailureResponse(response.Error!);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<string?>> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default)
-    {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var provider = scope.ServiceProvider;
-        var validator = provider.GetRequiredService<IValidator<CreateUserCommand>>();
-
-        var createUserCommand = new CreateUserCommand(createUserDto);
-        var validationResult = await validator.ValidateAsync(createUserCommand, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            _logger.LogWarning("create user dto validation failed.");
-            return BadRequest(validationResult.Errors);
-        }
-
-        var sender = provider.GetRequiredService<ICommandHandler<CreateUserCommand>>();
-        var response = await sender.Handle(createUserCommand, cancellationToken);
-
-        if (response.IsSuccess && response is Response<UserDto> success)
-        {
-            return CreatedAt(success.Data!);
-        }
-
-        return HandleFailureResponse(response.Error!);
-    }
-
-    private CreatedAtRouteResult CreatedAt(UserDto userDto)
-    {
-        return CreatedAtRoute(
-            "GetUserByEmail",
-            new
-            {
-                email = userDto.Email
-            },
-            userDto);
     }
 
     private ActionResult HandleFailureResponse(Error error)

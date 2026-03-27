@@ -15,4 +15,11 @@ public static class Constants
 
     public const int CreatedByMaxTextLength = 50;
     public const int LastModifiedByMaxTextLength = 50;
+    
+    public const string AdministratorRole = "Administrator";
+    
+    public const string TestFirstName = "test";
+    public const string TestLastName = "test";
+    public const string TestUsername = "test.test@test.test";
+    public const string TestPassword = "PasswordABC123!!!";
 }
