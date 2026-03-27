@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,9 @@ public static class DependencyInjection
 {
     public static void AddInfrastructure(this IHostApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        var configuration = builder.Configuration;
+
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
                                ?? throw new InvalidOperationException("No connection string can be found.");
 
         builder.Services.AddDbContext<WdaDbContext>(options =>
@@ -31,15 +34,6 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<ApplicationDbContextInitialiser>();
 
-        builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = IdentityConstants.ApplicationScheme;
-                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-            }).AddIdentityCookies();
-
-
-        builder.Services.AddAuthorizationBuilder();
-
         builder.Services
             .AddIdentityCore<ApplicationUser>()
             .AddRoles<IdentityRole>()
@@ -50,20 +44,24 @@ public static class DependencyInjection
 
         builder.Services.AddTransient<IIdentityService, IdentityService>();
 
-        var secretForKey = builder.Configuration["Authentication:SecretForKey"]
+        var secretForKey = configuration["Authentication:SecretForKey"]
                            ?? throw new InvalidOperationException("No Authentication:SecretForKey for key found.");
 
-        var issuer = builder.Configuration["Authentication:Issuer"]
+        var issuer = configuration["Authentication:Issuer"]
                      ?? throw new InvalidOperationException("No Authentication:Issuer found.");
 
-        var audience = builder.Configuration["Authentication:Audience"]
+        var audience = configuration["Authentication:Audience"]
                        ?? throw new InvalidOperationException("No Authentication:Audience found.");
 
         var encodedSecretForKey = Encoding.UTF8.GetBytes(secretForKey);
         var symmetricSecurityKey = new SymmetricSecurityKey(encodedSecretForKey);
 
-        builder.Services.AddAuthentication("Bearer")
-            .AddJwtBearer("Bearer", options =>
+        builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -75,7 +73,8 @@ public static class DependencyInjection
                     ValidAudience = audience,
                     IssuerSigningKey = symmetricSecurityKey
                 };
-            });
+            })
+            .AddIdentityCookies();
 
         builder.Services.AddAuthorization();
     }
