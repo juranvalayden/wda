@@ -12,6 +12,7 @@
 1. I have added a postman collection to test the API for the positive and negative test cases
 2. You may need to change the port based on whether you're running the in docker(8080) or locally(7146)
 3. The collection has a variable, aptly named {{portNumber}}
+4. The location of the collection can be imported from the "Solution Items" folder
 
 ### Viewing the endpoints via Scalar
 1. Once docker compose is up and running the scalar endpoint port 8080
