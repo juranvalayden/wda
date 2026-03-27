@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -14,16 +16,29 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-      
+
   api:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=WdaDb;Username=postgres;Password=postgres;"
+      ASPNETCORE_URLS: "http://+:8080"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      Authentication__SecretForKey: "IvDuXqMFRXyH+LaEoCD6lBTFqpSQrj0qKTjSV5Sm4XmMClTP/ucVEzfYtafP5vfQ1lDQYpKOocMe7VWGgRGn5Q=="
+      Authentication__Issuer: "http://localhost:8080"
+      Authentication__Audience: "wda.webapi"
     depends_on:
       postgres:
-        condition: service_healthy      
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
 
 volumes:
   postgres_data:
