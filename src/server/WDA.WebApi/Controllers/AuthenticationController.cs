@@ -4,7 +4,7 @@ using WDA.Application.Abstractions.Common;
 using WDA.Application.Dtos;
 using WDA.Application.Users.Commands.LoginUserCommand;
 using WDA.Application.Users.Commands.RegisterUserCommand;
-using WDA.Application.Users.Queries.GetUserByEmail;
+using WDA.Application.Users.Queries.GetUserById;
 using WDA.Shared.Errors;
 
 namespace WDA.WebApi.Controllers;
@@ -43,8 +43,9 @@ public class AuthenticationController : ControllerBase
 
         if (commandResponse is not Response<string> success) return HandleFailureResponse(commandResponse.Error!);
 
-        var queryHandler = provider.GetRequiredService<IHandler<GetUserByEmailQuery>>();
-        var queryResponse = await queryHandler.Handle(new GetUserByEmailQuery(success.Data!), cancellationToken);
+        var queryHandler = provider.GetRequiredService<IHandler<GetUserByIdQuery>>();
+        var getUserByIdQuery = new GetUserByIdQuery(success.Data!);
+        var queryResponse = await queryHandler.Handle(getUserByIdQuery, cancellationToken);
 
         return queryResponse is Response<UserDto> querySuccess
             ? CreatedAt(querySuccess.Data!)
@@ -67,16 +68,15 @@ public class AuthenticationController : ControllerBase
             return BadRequest(validationResult.Errors);
         }
 
-        var sender = provider.GetRequiredService<IQueryHandler<GetUserByEmailQuery>>();
-        var getUserByEmailQuery = new GetUserByEmailQuery(loginUserDto.Email);
-        var queryResponse = await sender.Handle(getUserByEmailQuery, cancellationToken);
+        var commandHandler = provider.GetRequiredService<IHandler<LoginUserCommand>>();
+        var response = await commandHandler.Handle(loginUserCommand, cancellationToken);
 
-        if (queryResponse.IsSuccess && queryResponse is Response<UserDto> success)
+        if (response is Response<string> successResponse)
         {
-            return Ok(success.Data);
+            return Ok(successResponse.Data);
         }
 
-        return HandleFailureResponse(queryResponse.Error!);
+        return HandleFailureResponse(response.Error!);
     }
 
     private CreatedAtRouteResult CreatedAt(UserDto userDto)

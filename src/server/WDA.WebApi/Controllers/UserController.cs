@@ -38,13 +38,13 @@ public class UserController : ControllerBase
             return BadRequest(validationResult.Errors);
         }
 
-        var sender = provider.GetRequiredService<IQueryHandler<GetUserByEmailQuery>>();
-        var response = await sender.Handle(getUserByEmailQuery, cancellationToken);
+        var queryHandler = provider.GetRequiredService<IHandler<GetUserByEmailQuery>>();
+        var response = await queryHandler.Handle(getUserByEmailQuery, cancellationToken);
 
         if (response.IsSuccess && response is Response<UserDto> success)
         {
             return Ok(success.Data);
-        }
+        }    
 
         return HandleFailureResponse(response.Error!);
     }

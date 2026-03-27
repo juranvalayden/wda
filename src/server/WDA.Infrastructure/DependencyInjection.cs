@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using WDA.Application.Interfaces;
 using WDA.Application.Services;
 using WDA.Infrastructure.Identity;
@@ -49,59 +50,33 @@ public static class DependencyInjection
 
         builder.Services.AddTransient<IIdentityService, IdentityService>();
 
-        //var secretForKey = builder.Configuration["Authentication:SecretForKey"]
-        //                   ?? throw new InvalidOperationException("No Authentication:SecretForKey for key found.");
+        var secretForKey = builder.Configuration["Authentication:SecretForKey"]
+                           ?? throw new InvalidOperationException("No Authentication:SecretForKey for key found.");
 
-        //var validIssuer = builder.Configuration["Authentication:Issuer"]
-        //                  ?? throw new InvalidOperationException("No Authentication:Issuer found.");
+        var issuer = builder.Configuration["Authentication:Issuer"]
+                     ?? throw new InvalidOperationException("No Authentication:Issuer found.");
 
-        //var validAudience = builder.Configuration["Authentication:Audience"]
-        //                    ?? throw new InvalidOperationException("No Authentication:Audience found.");
+        var audience = builder.Configuration["Authentication:Audience"]
+                       ?? throw new InvalidOperationException("No Authentication:Audience found.");
 
-        //builder.Services.AddAuthentication("Bearer")
-        //    .AddJwtBearer(options =>
-        //        {
-        //            var optionsTokenValidationParameters = CreateTokenValidationParameters(validIssuer, validAudience, secretForKey);
-        //            options.TokenValidationParameters = optionsTokenValidationParameters;
-        //        }
-        //    );
+        var encodedSecretForKey = Encoding.UTF8.GetBytes(secretForKey);
+        var symmetricSecurityKey = new SymmetricSecurityKey(encodedSecretForKey);
 
-        //builder.Services.AddAuthorization(options =>
-        //{
-        //    options.AddPolicy("Admin", policy =>
-        //    {
-        //        policy.RequireAuthenticatedUser();
-        //        policy.RequireClaim("email", "test.test@test.test");
-        //    });
-        //});
+        builder.Services.AddAuthentication("Bearer")
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = symmetricSecurityKey
+                };
+            });
 
-
-        //builder.Services.AddScoped<ApplicationDbContextInitialiser>();
-
-        //builder.Services.AddAuthorizationBuilder();
-
-        //builder.Services
-        //    .AddIdentityCore<User>()
-        //    .AddRoles<IdentityRole>()
-        //    .AddEntityFrameworkStores<WdaDbContext>()
-        //    .AddSignInManager()
-        //    .AddDefaultTokenProviders()
-        //    .AddApiEndpoints();
-
-        //builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-        //builder.Services.AddTransient<IIdentityService, IdentityService>();
-    }
-
-    private static TokenValidationParameters CreateTokenValidationParameters(string validIssuer, string validAudience, string secretForKey)
-    {
-        return new TokenValidationParameters()
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = validIssuer,
-            ValidAudience = validAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(secretForKey))
-        };
+        builder.Services.AddAuthorization();
     }
 }

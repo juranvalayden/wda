@@ -6,6 +6,5 @@ public enum ErrorType
     Null,
     NotFound,
     AlreadyExists,
-    ErrorCreatingUser,
-    Identity
+    ErrorCreatingUser
 }

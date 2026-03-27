@@ -2,8 +2,8 @@
 
 public class Response
 {
-    public bool IsSuccess { get; set; }
-    public Error? Error { get; set; }
+    public bool IsSuccess { get; protected init; }
+    public Error? Error { get; protected init; }
     
     protected Response() { }
 
@@ -28,7 +28,7 @@ public class Response
 
 public class Response<TResult> : Response
 {
-    public TResult? Data { get; set; }
+    public TResult? Data { get; protected init; }
 
     public static Response<TResult> Success(TResult result)
     {

@@ -24,6 +24,7 @@ public class ApplicationUser : IdentityUser
         LastName = lastName;
         Password = password;
         ConfirmedPassword = confirmedPassword;
+        UserName = email;
         Email = email;
     }
 }

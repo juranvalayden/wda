@@ -1,5 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using WDA.Application.Interfaces;
 using WDA.Application.Services;
 using WDA.Shared.Errors;
@@ -11,14 +16,17 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IConfiguration _configuration;
 
     public IdentityService(UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IConfiguration configuration)
     {
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory ?? throw new ArgumentNullException(nameof(userClaimsPrincipalFactory));
         _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     public async Task<Response> RegisterUserAsync(ApplicationUser applicationUser)
@@ -31,10 +39,22 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            return UserErrors.ErrorCreatingUser();
+            return UserErrors.ErrorRegisteringUser();
         }
 
         return Response<string>.Success(applicationUser.Id);
+    }
+
+    public async Task<Response> GetUserByIdAsync(string userId)
+    {
+        var applicationUser = await _userManager.FindByIdAsync(userId);
+
+        if (applicationUser == null)
+        {
+            return UserErrors.NotFound(userId);
+        }
+
+        return Response<ApplicationUser>.Success(applicationUser);
     }
 
     public async Task<Response> GetUserByEmailAsync(string email)
@@ -73,5 +93,36 @@ public class IdentityService : IIdentityService
         var result = await _authorizationService.AuthorizeAsync(principal, policyName);
 
         return result.Succeeded;
+    }
+
+    public string? GenerateToken(ApplicationUser applicationUser)
+    {
+        var claims = new List<Claim>
+        {
+            new("sub", applicationUser.Id),
+            new("given_name", applicationUser.FirstName),
+            new("family_name", applicationUser.LastName),
+            new("email", applicationUser.Email!)
+        };
+
+        var secretForKey = _configuration["Authentication:SecretForKey"]
+                           ?? throw new InvalidOperationException("No Authentication:SecretForKey for key found.");
+
+        var issuer = _configuration["Authentication:Issuer"]
+                          ?? throw new InvalidOperationException("No Authentication:Issuer found.");
+
+        var audience = _configuration["Authentication:Audience"]
+                            ?? throw new InvalidOperationException("No Authentication:Audience found.");
+
+        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretForKey));
+        var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: DateTime.Now.AddHours(1),
+            signingCredentials: signingCredentials);
+
+        return new JwtSecurityTokenHandler().WriteToken(token) ?? string.Empty;
     }
 }

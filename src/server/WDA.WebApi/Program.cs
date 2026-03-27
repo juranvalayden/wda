@@ -16,12 +16,19 @@ using var logger = new LoggerConfiguration()
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.AddServiceDefaults();
+builder.ConfigureOpenTelemetry();
 
 builder.Services.AddApplication();
 builder.AddInfrastructure();
 
-builder.AddWebServices();
+builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 

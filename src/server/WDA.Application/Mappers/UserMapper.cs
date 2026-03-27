@@ -9,7 +9,7 @@ public static class UserMapper
         new(applicationUser.Id,
             applicationUser.FirstName, 
             applicationUser.LastName, 
-            applicationUser?.Email ?? string.Empty);
+            applicationUser.Email!);
 
     public static ApplicationUser MapToEntity(RegisterUserDto registerUserDto) =>
         new(registerUserDto.FirstName, 

@@ -9,9 +9,7 @@ public interface IIdentityService
 
     Task<Response> GetUserByEmailAsync(string email);
 
-    Task<string?> GetUserNameAsync(string userId);
+    Task<Response> GetUserByIdAsync(string userId);
 
-    Task<bool> IsInRoleAsync(string userId, string role);
-
-    Task<bool> AuthorizeAsync(string userId, string policyName);
+    string? GenerateToken(ApplicationUser applicationUser);
 }
