@@ -1,10 +1,10 @@
-# WDA
+## WDA 
 
 1. Clone the solution.
 
-## Powershell cmd
+### Powershell cmd
 1. Once the solution is cloned, in the root folder enter the following cmd: docker compose up
 
-## Unit Tests
+### Unit Tests
 1. UserController tests
 2. AuthenticationController tests
