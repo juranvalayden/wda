@@ -24,10 +24,7 @@ public static class DependencyInjection
 
         builder.Services.AddDbContext<WdaDbContext>(options =>
         {
-            options.UseNpgsql(connectionString, optionsBuilder =>
-            {
-                optionsBuilder.MigrationsAssembly(typeof(WdaDbContext).Assembly.FullName);
-            });
+            options.UseNpgsql(connectionString);
         });
 
         builder.Services.AddScoped<IWdaDbContext>(provider => provider.GetRequiredService<WdaDbContext>());

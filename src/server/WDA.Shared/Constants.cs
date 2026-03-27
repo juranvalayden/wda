@@ -13,6 +13,9 @@ public static class Constants
     public const int PasswordMinTextLength = 10;
     public const int PasswordMaxTextLength = 50;
 
+    public const int CreatedByMaxTextLength = 50;
+    public const int LastModifiedByMaxTextLength = 50;
+
     public const string AdministratorRole = "Administrator";
     
     public const string TestFirstName = "test";
