@@ -58,7 +58,7 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<string>> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var provider = scope.ServiceProvider;

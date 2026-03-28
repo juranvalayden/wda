@@ -5,30 +5,32 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using WDA.Application.Abstractions.Common;
 
-namespace WDA.Tests.TestData;
+namespace WDA.Tests.TestHelpers;
 
 public class TestServiceScopeHelper<TController> : IDisposable where TController : ControllerBase
 {
     public Mock<ILogger<TController>> LoggerMock { get; }
     public Mock<IServiceScopeFactory> ScopeFactoryMock { get; }
-    public Mock<IServiceScope> ScopeMock { get; }
-    public Mock<IServiceProvider> ProviderMock { get; }
+    // ReSharper disable once InconsistentNaming
+    private Mock<IServiceScope> _serviceScope { get; }
+    // ReSharper disable once InconsistentNaming
+    private Mock<IServiceProvider> _providerMock { get; }
 
     public TestServiceScopeHelper()
     {
         LoggerMock = new Mock<ILogger<TController>>();
         ScopeFactoryMock = new Mock<IServiceScopeFactory>();
-        ScopeMock = new Mock<IServiceScope>();
-        ProviderMock = new Mock<IServiceProvider>();
+        _serviceScope = new Mock<IServiceScope>();
+        _providerMock = new Mock<IServiceProvider>();
 
-        ScopeMock.Setup(s => s.ServiceProvider).Returns(ProviderMock.Object);
-        ScopeFactoryMock.Setup(f => f.CreateScope()).Returns(ScopeMock.Object);
+        _serviceScope.Setup(s => s.ServiceProvider).Returns(_providerMock.Object);
+        ScopeFactoryMock.Setup(f => f.CreateScope()).Returns(_serviceScope.Object);
     }
 
     public void SetupValidatorFor<T>(IValidator<T> validator)
         where T : class
     {
-        ProviderMock
+        _providerMock
             .Setup(p => p.GetService(typeof(IValidator<T>)))
             .Returns(validator);
     }
@@ -37,7 +39,7 @@ public class TestServiceScopeHelper<TController> : IDisposable where TController
     public void SetupHandlerFor<TCommand>(IHandler<TCommand> handler)
         where TCommand : IRequest
     {
-        ProviderMock
+        _providerMock
             .Setup(p => p.GetService(typeof(IHandler<TCommand>)))
             .Returns(handler);
     }
@@ -45,7 +47,7 @@ public class TestServiceScopeHelper<TController> : IDisposable where TController
     public void SetupHandlerForQuery<TQuery>(IHandler<TQuery> handler)
         where TQuery : IRequest
     {
-        ProviderMock
+        _providerMock
             .Setup(p => p.GetService(typeof(IHandler<TQuery>)))
             .Returns(handler);
     }

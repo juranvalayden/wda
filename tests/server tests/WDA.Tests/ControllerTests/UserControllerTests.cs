@@ -7,10 +7,10 @@ using WDA.Application.Abstractions.Common;
 using WDA.Application.Dtos;
 using WDA.Application.Users.Queries.GetUserByEmail;
 using WDA.Shared.Errors;
-using WDA.Tests.TestData;
+using WDA.Tests.TestHelpers;
 using WDA.WebApi.Controllers;
 
-namespace WDA.Tests.UserControllerTests;
+namespace WDA.Tests.ControllerTests;
 
 [TestFixture]
 public class UserControllerTests
@@ -44,7 +44,7 @@ public class UserControllerTests
         _testServiceScopeHelper.SetupValidatorFor(validatorMock.Object);
 
         var handlerMock = new Mock<IHandler<GetUserByEmailQuery>>();
-        var userDto = TestControllerData.ValidUserDto("xyz");
+        var userDto = TestData.ValidUserDto("xyz");
         var successResponse = Response<UserDto>.Success(userDto);
         handlerMock
             .Setup(h => h.Handle(It.IsAny<GetUserByEmailQuery>(), It.IsAny<CancellationToken>()))
@@ -94,7 +94,6 @@ public class UserControllerTests
         // Arrange
         var email = "missing@example.com";
 
-        // Validator returns valid
         var validatorMock = new Mock<IValidator<GetUserByEmailQuery>>();
         validatorMock
             .Setup(v => v.ValidateAsync(It.IsAny<GetUserByEmailQuery>(), It.IsAny<CancellationToken>()))
@@ -102,7 +101,6 @@ public class UserControllerTests
         
         _testServiceScopeHelper.SetupValidatorFor(validatorMock.Object);
 
-        // Handler returns failure with NotFound error
         var handlerMock = new Mock<IHandler<GetUserByEmailQuery>>();
         var error = new Error(ErrorType.NotFound, "User not found");
         var failureResponse = Response.Failure(error);

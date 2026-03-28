@@ -12,7 +12,7 @@ COPY src/server/WDA.Application/WDA.Application.csproj src/WDA.Application/
 COPY src/server/WDA.Domain/WDA.Domain.csproj src/WDA.Domain/
 COPY src/server/WDA.Infrastructure/WDA.Infrastructure.csproj src/WDA.Infrastructure/
 COPY src/server/WDA.Shared/WDA.Shared.csproj src/WDA.Shared/
-COPY tests/server/WDA.Tests/WDA.Tests.csproj tests/WDA.Tests/
+COPY tests/server tests/WDA.Tests/WDA.Tests.csproj tests/WDA.Tests/
 
 RUN dotnet restore
 

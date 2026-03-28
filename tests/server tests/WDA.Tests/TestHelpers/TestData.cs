@@ -2,9 +2,9 @@
 using WDA.Application.Services;
 using WDA.Shared;
 
-namespace WDA.Tests.TestData;
+namespace WDA.Tests.TestHelpers;
 
-public static class TestControllerData
+public static class TestData
 {
     public static ApplicationUser ValidApplicationUser()
     {
