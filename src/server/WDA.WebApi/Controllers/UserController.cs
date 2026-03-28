@@ -23,6 +23,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{email}", Name = "GetUserByEmail")]
+    [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserDto?>> GetUserByEmail(string email, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceScopeFactory.CreateScope();

@@ -23,7 +23,9 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterUserDto registerUserDto, CancellationToken cancellationToken = default)
+    [ProducesResponseType<UserDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<UserDto>> Register(RegisterUserDto registerUserDto, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var provider = scope.ServiceProvider;
@@ -53,6 +55,9 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("login")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceScopeFactory.CreateScope();
